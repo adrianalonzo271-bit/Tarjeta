@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para mi papito 💙</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
+}
+
+.container{
+  padding:20px;
+}
+
+#contador{
+  font-size:2.5em;
+  margin-top:30px;
+}
+
+.card{
+  background:rgba(255,255,255,0.1);
+  padding:20px;
+  border-radius:15px;
+  backdrop-filter:blur(10px);
+  margin:20px auto;
+  max-width:400px;
+}
+
+button{
+  padding:10px 15px;
+  margin:8px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:1em;
+  background:#00c6ff;
+  color:white;
+}
+
+button:hover{
+  background:#0072ff;
+}
+
+.hidden{
+  display:none;
+}
+
+.balloon{
+  position:fixed;
+  bottom:-100px;
+  font-size:30px;
+  animation:subir 6s linear infinite;
+}
+
+@keyframes subir{
+  from{transform:translateY(0);}
+  to{transform:translateY(-110vh);}
+}
+
+.carta{
+  line-height:1.6;
+  font-size:1.1em;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 MUSICA OCULTA -->
+<audio id="musica" loop>
+  <source src="musica.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+
+<h1> Algo especial viene en camino...
+  ¿Que sera? 🤔🤔
+</h1>
+
+<div id="contador"></div>
+
+<!-- BOTÓN PARA CELULARES -->
+<button onclick="activarMusica()">🎵 Activar música</button>
+
+<div id="trivia" class="card hidden">
+  <h2>🔐 Verificación de identidad</h2>
+  <p id="pregunta"></p>
+  <div id="opciones"></div>
+</div>
+
+<div id="codigo" class="card hidden">
+  <h2>Introduce el código secreto</h2>
+  <input type="text" id="inputCodigo" placeholder="Código..." style="padding:8px;border-radius:6px;border:none;">
+  <br><br>
+  <button onclick="verificarCodigo()">Desbloquear</button>
+</div>
+
+<div id="carta" class="card hidden">
+  <h2>💙 Feliz cumpleaños papito</h2>
+  <p class="carta">
+    Hola papito 💙<br><br>
+    Hoy no es un día cualquiera.<br>
+    Hoy celebramos a la persona que, sin saber programar,<br>
+    construyó el sistema más importante de mi vida: nuestra familia.<br><br>
+    Gracias por cada consejo, cada sacrificio silencioso,<br>
+    y por estar siempre incluso cuando nadie lo nota.<br><br>
+    Tal vez no te lo digo seguido,<br>
+    pero si pudiera elegir mil veces quién sea mi papá,<br>
+    siempre te elegiría a ti.<br><br>
+    Eres ejemplo, fuerza y corazón.<br>
+    Y aunque todavía estoy en proceso de ser ingeniero,<br>
+    algo sí tengo claro desde hace años:<br>
+    tuve el mejor maestro en casa.<br><br>
+    Feliz cumpleaños papito 🎂💙<br>
+    Con cariño,<br>
+    tu hijo 💻✨
+  </p>
+</div>
+
+</div>
+
+<script>
+// ================= CONTADOR =================
+const destino = new Date("Feb 21, 2026 21:03:00").getTime();
+
+const contador = setInterval(()=>{
+  const ahora = new Date().getTime();
+  const distancia = destino - ahora;
+
+  if(distancia <= 0){
+    clearInterval(contador);
+    document.getElementById("contador").innerHTML="🎉 ¡Llegó el momento!";
+    iniciarExperiencia();
+    return;
+  }
+
+  const h = Math.floor((distancia%(1000*60*60*24))/(1000*60*60));
+  const m = Math.floor((distancia%(1000*60*60))/(1000*60));
+  const s = Math.floor((distancia%(1000*60))/1000);
+
+  document.getElementById("contador").innerHTML=`${h}h ${m}m ${s}s`;
+},1000);
+
+// ================= TRIVIA =================
+const preguntas = [
+  {
+    pregunta:"¿Cuál es tu talento oculto como papá?",
+    opciones:["Arreglar cosas con cinta","Saber todo sin Google","Dormirte viendo noticias"],
+    correcta:1
+  },
+  {
+    pregunta:"¿Por que el FC Barcelona es el mejor equipo?",
+    opciones:["Por su historia","Porque el árbitro no nos ayuda 😅","Las dos son correctas 😂"],
+    correcta:1
+  },
+  {
+    pregunta:"¿Qué frase dices más seguido?",
+    opciones:["¿Y eso cuánto costó?","Es blanco o es negro","En mis tiempos…"],
+    correcta:0
+  },
+  {
+    pregunta:"Cuando algo se descompone, tu primera reacción es:",
+    opciones:["Golpearlo y esperar que funcione","Ver un tutorial","Llamar a alguien"],
+    correcta:0
+  },
+  {
+    pregunta:"¿Cuál es el apodo que más me gusta decirte?",
+    opciones:["Papá","Papito","Don"],
+    correcta:1
+  },
+  {
+    pregunta:"¿Qué es lo más importante en la vida?",
+    opciones:["Dinero","Trabajo","Familia"],
+    correcta:2
+  },
+  {
+    pregunta:"Si pudieras resumir ser papá en una palabra:",
+    opciones:["Orgullo","Amor","Paciencia"],
+    correcta:1
+  }
+];
+
+let actual=0;
+let puntos=0;
+
+function iniciarExperiencia(){
+  document.getElementById("trivia").classList.remove("hidden");
+  mostrarPregunta();
+}
+
+function mostrarPregunta(){
+  const p = preguntas[actual];
+  document.getElementById("pregunta").innerText=p.pregunta;
+  const div=document.getElementById("opciones");
+  div.innerHTML="";
+
+  p.opciones.forEach((op,i)=>{
+    const btn=document.createElement("button");
+    btn.innerText=op;
+    btn.onclick=()=>responder(i);
+    div.appendChild(btn);
+  });
+}
+
+function responder(i){
+  if(i===preguntas[actual].correcta) puntos++;
+  actual++;
+  if(actual<preguntas.length){
+    mostrarPregunta();
+  }else{
+    terminarTrivia();
+  }
+}
+
+function terminarTrivia(){
+  if(puntos>=4){
+    document.getElementById("trivia").innerHTML="<h2>Verificación completada 💙</h2><p>Papá legendario desbloqueado 👑</p>";
+    setTimeout(()=>{
+      document.getElementById("codigo").classList.remove("hidden");
+    },2000);
+  }else{
+    document.getElementById("trivia").innerHTML="<h2>Mmm… sospechoso 🤨</h2><button onclick='location.reload()'>Intentar otra vez</button>";
+  }
+}
+
+// ================= CODIGO SECRETO =================
+function verificarCodigo(){
+  const val=document.getElementById("inputCodigo").value.toUpperCase();
+  if(val==="2202"||val==="PAPITO"){
+    document.getElementById("codigo").classList.add("hidden");
+    document.getElementById("carta").classList.remove("hidden");
+
+    // 🎵 REPRODUCIR MUSICA
+    const musica = document.getElementById("musica");
+    musica.volume = 0.4;
+    musica.play();
+
+    lanzarGlobos();
+  }else{
+    alert("Código incorrecto 😅");
+  }
+}
+
+// BOTÓN MANUAL (CELULAR)
+function activarMusica(){
+  const musica = document.getElementById("musica");
+  musica.volume = 0.4;
+  musica.play();
+}
+
+// ================= GLOBOS =================
+function lanzarGlobos(){
+  for(let i=0;i<25;i++){
+    const b=document.createElement("div");
+    b.className="balloon";
+    b.style.left=Math.random()*100+"vw";
+    b.style.animationDuration=(4+Math.random()*3)+"s";
+    b.innerHTML="🎈";
+    document.body.appendChild(b);
+  }
+}
+</script>
+
+</body>
+</html>
